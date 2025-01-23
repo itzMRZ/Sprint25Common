@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course Connections</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        #course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-gap: 20px;
+        }
+
+        .course-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .alternative {
+            color: red;
+        }
+
+        .course5 {
+            color: purple;
+        }
+
+        .color-key {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .color-key span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 50%;
+        }
+
+        .color-key .red-key {
+            background-color: red;
+        }
+
+        .color-key .purple-key {
+            background-color: purple;
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        #person-details {
+            margin-top: 30px;
+        }
+
+        .person-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+
+        .person-card h3 {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .person-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .course-block {
+            display: inline-block;
+            background: #e0f7fa;
+            color: #00796b;
+            padding: 5px 10px;
+            margin: 5px 5px 5px 0;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .common-list {
+            margin: 10px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .common-list li {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .common-course {
+            color: #007BFF;
+            display: inline-block;
+            background: #e3f2fd;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 3px 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Course Connections</h1>
+    <div class="controls">
+        <button id="sort-courses">Sort Courses</button>
+    </div>
+    <div id="course-list"></div>
+    <div id="person-details"></div>
+
+    <script>
+        const courseData = {
+            "CSE111": { people: ["Kamal bai", "ART"] },
+            "CSE230": { people: ["Kamal bai", "Rezoan Ahmed", "MRZ", "HSC23"], alternativeFor: { "Nafi": true } },
+            "MAT110": { people: ["Kamal bai"] },
+            "CSE320": { people: ["Kamal bai", "ART", "Nafi", "Rezoan Ahmed"], alternativeFor: { "Nafi": true } },
+            "PHY112": { people: ["TANJIM FERDOUS", "MRZ", "Kamal bai"], alternativeFor: { "Kamal bai": true, "MRZ": true } },
+            "MAT120": { people: ["ART", "Nafi", "Rezoan Ahmed", "your dad", "HSC23", "Hasin hamid uddin", "MRZ"] },
+            "BIO101": { people: ["ART"] },
+            "BUS102": { people: ["Nafi"] },
+            "CHE101": { people: ["Nafi"], alternativeFor: { "Nafi": true } },
+            "CSE260": { people: ["Nafi"], alternativeFor: { "Nafi": true } },
+            "CSE110": { people: ["Rezoan Ahmed", "your dad", "HSC23"], alternativeFor: { "HSC23": true } },
+            "MAT216": { people: ["TANJIM FERDOUS"] },
+            "BIO1017": { people: ["TANJIM FERDOUS"] },
+            "CSE481": { people: ["your dad"] },
+            "ENG101": { people: ["HSC23"] },
+            "PHY111": { people: ["HSC23", "Hasin hamid uddin", "MRZ"], alternativeFor: { "MRZ": true } },
+            "Stat201": { people: ["Hasin hamid uddin"] },
+            "HUM210": { people: ["MRZ"] },
+            "STA201": { people: ["MRZ"] },
+            "BUS201": { people: ["Kamal bai"], alternativeFor: { "Kamal bai": true } }
+        };
+
+        const courseListDiv = document.getElementById('course-list');
+        const personDetailsDiv = document.getElementById('person-details');
+
+        // Function to display courses
+        function displayCourses(sorted = false) {
+            courseListDiv.innerHTML = '';
+            let courses = Object.keys(courseData);
+            if (sorted) {
+                courses = courses.sort((a, b) => courseData[b].people.length - courseData[a].people.length);
+            }
+
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.innerHTML = `<h3>${course}</h3><ul></ul>`;
+                const ul = card.querySelector('ul');
+                courseData[course].people.forEach(person => {
+                    const li = document.createElement('li');
+                    li.textContent = person;
+                    ul.appendChild(li);
+                });
+                courseListDiv.appendChild(card);
+            });
+        }
+
+        // Function to calculate and display person details
+        function displayPersonDetails() {
+            const personCourseMap = {};
+
+            // Create map of person to courses
+            for (const course in courseData) {
+                courseData[course].people.forEach(person => {
+                    if (!personCourseMap[person]) {
+                        personCourseMap[person] = [];
+                    }
+                    personCourseMap[person].push(course);
+                });
+            }
+
+            personDetailsDiv.innerHTML = '<h2>Person Details</h2>';
+            for (const person in personCourseMap) {
+                const courses = personCourseMap[person];
+                const commonCourses = Object.keys(personCourseMap)
+                    .filter(otherPerson => otherPerson !== person)
+                    .map(otherPerson => ({
+                        name: otherPerson,
+                        common: courses.filter(course => personCourseMap[otherPerson].includes(course))
+                    }))
+                    .filter(entry => entry.common.length > 0);
+
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'person-card';
+                detailsDiv.innerHTML = `
+                    <h3>${person}</h3>
+                    <p><strong>Courses:</strong></p>
+                    <div>
+                        ${courses.map(course => `<span class="course-block">${course}</span>`).join('')}
+                    </div>
+                    ${commonCourses.length > 0 ? '<p><strong>Common Courses:</strong></p>' : ''}
+                    <ul class="common-list">
+                        ${commonCourses
+                            .map(entry => `
+                                <li>
+                                    <strong>${entry.name}</strong>
+                                    <div>
+                                        ${entry.common.map(course => `<span class="common-course">${course}</span>`).join('')}
+                                    </div>
+                                </li>`)
+                            .join('')}
+                    </ul>
+                `;
+                personDetailsDiv.appendChild(detailsDiv);
+            }
+        }
+
+        // Initial display
+        displayCourses();
+        displayPersonDetails();
+
+        // Add event listener for sorting
+        document.getElementById('sort-courses').addEventListener('click', () => {
+            displayCourses(true);
+        });
+    </script>
+</body>
+</html>
