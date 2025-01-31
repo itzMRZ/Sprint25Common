@@ -15,6 +15,16 @@
             grid-gap: 20px;
         }
 
+        .course-block.alternative {
+            background-color: #ce93d8; /* Light purple */
+            color: #512da8;
+        }
+
+        .course-block.course5 {
+            background-color: #ffcdd2; /* Light red */
+            color: #c62828; /* Darker red */
+        }
+
         .course-card {
             border: 1px solid #ccc;
             padding: 10px;
@@ -92,6 +102,17 @@
             font-size: 0.9em;
         }
 
+        .course-block.alternative {
+            background-color: #ce93d8; /* Light purple */
+            color: #512da8; /* Darker purple */
+        }
+
+        .course-block.course5 {
+            background-color: #ffcdd2; /* Light red */
+            color: #c62828; /* Darker red */
+        }
+
+
         .common-list {
             margin: 10px 0 0;
             padding: 0;
@@ -122,112 +143,122 @@
     <div id="person-details"></div>
 
     <script>
-        const courseData = {
-            "CSE111": { people: ["Kamal bai", "ART"] },
-            "CSE230": { people: ["Kamal bai", "Rezoan Ahmed", "MRZ", "HSC23"], alternativeFor: { "Nafi": true } },
-            "MAT110": { people: ["Kamal bai"] },
-            "CSE320": { people: ["Kamal bai", "ART", "Nafi", "Rezoan Ahmed"], alternativeFor: { "Nafi": true } },
-            "PHY112": { people: ["TANJIM FERDOUS", "MRZ", "Kamal bai"], alternativeFor: { "Kamal bai": true, "MRZ": true } },
-            "MAT120": { people: ["ART", "Nafi", "Rezoan Ahmed", "your dad", "HSC23", "Hasin hamid uddin", "MRZ"] },
-            "BIO101": { people: ["ART"] },
-            "BUS102": { people: ["Nafi"] },
-            "CHE101": { people: ["Nafi"], alternativeFor: { "Nafi": true } },
-            "CSE260": { people: ["Nafi"], alternativeFor: { "Nafi": true } },
-            "CSE110": { people: ["Rezoan Ahmed", "your dad", "HSC23"], alternativeFor: { "HSC23": true } },
-            "MAT216": { people: ["TANJIM FERDOUS"] },
-            "BIO1017": { people: ["TANJIM FERDOUS"] },
-            "CSE481": { people: ["your dad"] },
-            "ENG101": { people: ["HSC23"] },
-            "PHY111": { people: ["HSC23", "Hasin hamid uddin", "MRZ"], alternativeFor: { "MRZ": true } },
-            "Stat201": { people: ["Hasin hamid uddin"] },
-            "HUM210": { people: ["MRZ"] },
-            "STA201": { people: ["MRZ"] },
-            "BUS201": { people: ["Kamal bai"], alternativeFor: { "Kamal bai": true } }
-        };
+         fetch('course_data.json')
+            .then(response => response.json())
+            .then(jsonData => {
+                const courseData = jsonData;
 
-        const courseListDiv = document.getElementById('course-list');
-        const personDetailsDiv = document.getElementById('person-details');
+                const courseListDiv = document.getElementById('course-list');
+                const personDetailsDiv = document.getElementById('person-details');
 
-        // Function to display courses
-        function displayCourses(sorted = false) {
-            courseListDiv.innerHTML = '';
-            let courses = Object.keys(courseData);
-            if (sorted) {
-                courses = courses.sort((a, b) => courseData[b].people.length - courseData[a].people.length);
-            }
+                function displayCourses(sorted = false) {
+                    courseListDiv.innerHTML = '';
 
-            courses.forEach(course => {
-                const card = document.createElement('div');
-                card.className = 'course-card';
-                card.innerHTML = `<h3>${course}</h3><ul></ul>`;
-                const ul = card.querySelector('ul');
-                courseData[course].people.forEach(person => {
-                    const li = document.createElement('li');
-                    li.textContent = person;
-                    ul.appendChild(li);
-                });
-                courseListDiv.appendChild(card);
-            });
-        }
+                    const coursePeopleMap = {};
+                    courseData.forEach(person => {
+                        person.Courses.forEach(course => {
+                            if (!coursePeopleMap[course]) {
+                                coursePeopleMap[course] = [];
+                            }
+                            coursePeopleMap[course].push(person.Name);
+                        });
+                        if (person["Course 5"]) {
+                            if (!coursePeopleMap[person["Course 5"]]) {
+                                coursePeopleMap[person["Course 5"]] = [];
+                            }
+                            coursePeopleMap[person["Course 5"]].push(person.Name);
+                        }
+                        person["Alternative Courses"].forEach(course => {
+                            if (!coursePeopleMap[course]) {
+                                coursePeopleMap[course] = [];
+                            }
+                            coursePeopleMap[course].push(person.Name);
+                        });
+                    });
 
-        // Function to calculate and display person details
-        function displayPersonDetails() {
-            const personCourseMap = {};
-
-            // Create map of person to courses
-            for (const course in courseData) {
-                courseData[course].people.forEach(person => {
-                    if (!personCourseMap[person]) {
-                        personCourseMap[person] = [];
+                    let courses = Object.keys(coursePeopleMap);
+                    if (sorted) {
+                        courses = courses.sort((a, b) => coursePeopleMap[b].length - coursePeopleMap[a].length);
                     }
-                    personCourseMap[person].push(course);
+
+                    courses.forEach(course => {
+                        const card = document.createElement('div');
+                        card.className = 'course-card';
+                        card.innerHTML = `<h3>${course}</h3><ul></ul>`;
+                        const ul = card.querySelector('ul');
+                        coursePeopleMap[course].forEach(person => {
+                            const li = document.createElement('li');
+                            li.textContent = person;
+                            ul.appendChild(li);
+                        });
+                        courseListDiv.appendChild(card);
+                    });
+                }
+
+                function displayPersonDetails() {
+                    const personCourseMap = {};
+
+                    courseData.forEach(person => {
+                        personCourseMap[person.Name] = [...person.Courses];
+                        if (person["Course 5"]) {
+                            personCourseMap[person.Name].push(person["Course 5"]);
+                        }
+                        person["Alternative Courses"].forEach(course => {
+                            personCourseMap[person.Name].push(course);
+                        });
+                    });
+
+                                        personDetailsDiv.innerHTML = '<h2>Person Details</h2>';
+                    for (const person in personCourseMap) {
+                        const courses = personCourseMap[person];
+                        const commonCourses = Object.keys(personCourseMap)
+                            .filter(otherPerson => otherPerson !== person)
+                            .map(otherPerson => ({
+                                name: otherPerson,
+                                common: courses.filter(course => personCourseMap[otherPerson]?.includes(course))
+                            }))
+                            .filter(entry => entry.common.length > 0);
+
+                        const detailsDiv = document.createElement('div');
+                        detailsDiv.className = 'person-card';
+                        detailsDiv.innerHTML = `
+                            <h3>${person}</h3>
+                            <p><strong>Courses:</strong></p>
+                            <div>
+                                ${courses.map(course => {
+                                    let classNames = 'course-block';
+                                    if (courseData.find(p => p.Name === person && p["Alternative Courses"].includes(course))) {
+                                        classNames += ' alternative';
+                                    } else if (courseData.find(p => p.Name === person && p["Course 5"] === course)) {
+                                        classNames += ' course5';
+                                    }
+                                    return `<span class="${classNames}">${course}</span>`;
+                                }).join('')}
+                            </div>
+                            ${commonCourses.length > 0 ? '<p><strong>Common Courses:</strong></p>' : ''}
+                            <ul class="common-list">
+                                ${commonCourses
+                                    .map(entry => `
+                                        <li>
+                                            <strong>${entry.name}</strong>
+                                            <div>
+                                                ${entry.common.map(course => `<span class="common-course">${course}</span>`).join('')}
+                                            </div>
+                                        </li>`)
+                                    .join('')}
+                            </ul>
+                        `;
+                        personDetailsDiv.appendChild(detailsDiv);
+                    }
+                }
+
+                displayCourses();
+                displayPersonDetails();
+
+                document.getElementById('sort-courses').addEventListener('click', () => {
+                    displayCourses(true);
                 });
-            }
-
-            personDetailsDiv.innerHTML = '<h2>Person Details</h2>';
-            for (const person in personCourseMap) {
-                const courses = personCourseMap[person];
-                const commonCourses = Object.keys(personCourseMap)
-                    .filter(otherPerson => otherPerson !== person)
-                    .map(otherPerson => ({
-                        name: otherPerson,
-                        common: courses.filter(course => personCourseMap[otherPerson].includes(course))
-                    }))
-                    .filter(entry => entry.common.length > 0);
-
-                const detailsDiv = document.createElement('div');
-                detailsDiv.className = 'person-card';
-                detailsDiv.innerHTML = `
-                    <h3>${person}</h3>
-                    <p><strong>Courses:</strong></p>
-                    <div>
-                        ${courses.map(course => `<span class="course-block">${course}</span>`).join('')}
-                    </div>
-                    ${commonCourses.length > 0 ? '<p><strong>Common Courses:</strong></p>' : ''}
-                    <ul class="common-list">
-                        ${commonCourses
-                            .map(entry => `
-                                <li>
-                                    <strong>${entry.name}</strong>
-                                    <div>
-                                        ${entry.common.map(course => `<span class="common-course">${course}</span>`).join('')}
-                                    </div>
-                                </li>`)
-                            .join('')}
-                    </ul>
-                `;
-                personDetailsDiv.appendChild(detailsDiv);
-            }
-        }
-
-        // Initial display
-        displayCourses();
-        displayPersonDetails();
-
-        // Add event listener for sorting
-        document.getElementById('sort-courses').addEventListener('click', () => {
-            displayCourses(true);
-        });
+            })
+            .catch(error => console.error('Error fetching JSON:', error));
     </script>
 </body>
-</html>
