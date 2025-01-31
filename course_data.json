@@ -1,0 +1,130 @@
+[
+  {
+    "Name": "Kamal bai",
+    "Courses": [
+      "Cse111",
+      "Cse230",
+      "Mat110",
+      "Cse320"
+    ],
+    "Course 5": null,
+    "Alternative Courses": [
+      "Phy112",
+      "Bus201"
+    ]
+  },
+  {
+    "Name": "ART",
+    "Courses": [
+      "CSE111",
+      "MAT120",
+      "BI0101",
+      "CSE320"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  },
+  {
+    "Name": "Nafi",
+    "Courses": [
+      "CSE220",
+      "CSE320",
+      "MAT120",
+      "BUS102",
+      "CHE101"
+    ],
+    "Course 5": null,
+    "Alternative Courses": [
+      "CSE320",
+      "CHE101"
+    ]
+  },
+  {
+    "Name": "Rezoan Ahmed",
+    "Courses": [
+      "Cse110",
+      "Cse230",
+      "Cse320",
+      "Mat120"
+    ],
+    "Course 5": "Emb",
+    "Alternative Courses": []
+  },
+  {
+    "Name": "TANJIM FERDOUS",
+    "Courses": [
+      "CSE220",
+      "PHY112",
+      "MAT216",
+      "BIO101?"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  },
+  {
+    "Name": "Hasin hamid uddin",
+    "Courses": [
+      "Cse220",
+      "Phy111",
+      "Mat120",
+      "Stat201"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  },
+  {
+    "Name": "MRZ",
+    "Courses": [
+      "CSE230",
+      "MAT120",
+      "HUM210",
+      "STA201",
+      "PHY111"
+    ],
+    "Course 5": null,
+    "Alternative Courses": [
+      "PHY112"
+    ]
+  },
+  {
+    "Name": "Sudad Hasanat Salim",
+    "Courses": [
+      "CSE110",
+      "CHE101",
+      "PHY112"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  },
+  {
+    "Name": "RHB",
+    "Courses": [
+      "CSE111",
+      "MAT120",
+      "CSE320",
+      "BUS201"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  },
+  {
+    "Name": "Maliha Ahsaan",
+    "Courses": [
+      "Cse110",
+      "Mat120",
+      "Bus201"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  },
+  {
+    "Name": "Sar",
+    "Courses": [
+      "CSE 220",
+      "Phy 112",
+      "Mat 120"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
+  }
+]
