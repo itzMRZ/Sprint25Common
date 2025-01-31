@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Course Connections</title>
-    <p>-by MRZ</p>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
         body {
             font-family: sans-serif;
@@ -16,61 +16,12 @@
             grid-gap: 20px;
         }
 
-        .course-block.alternative {
-            background-color: #ce93d8; /* Light purple */
-            color: #512da8;
-        }
-
-        .course-block.course5 {
-            background-color: #ffcdd2; /* Light red */
-            color: #c62828; /* Darker red */
-        }
-
         .course-card {
             border: 1px solid #ccc;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
             background-color: #f9f9f9;
-        }
-
-        .alternative {
-            color: red;
-        }
-
-        .course5 {
-            color: purple;
-        }
-
-        .color-key {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .color-key span {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-            border-radius: 50%;
-        }
-
-        .color-key .red-key {
-            background-color: red;
-        }
-
-        .color-key .purple-key {
-            background-color: purple;
-        }
-
-        .controls {
-            margin: 20px 0;
-        }
-
-        #person-details {
-            margin-top: 30px;
         }
 
         .person-card {
@@ -80,17 +31,6 @@
             border-radius: 8px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
             background: #fff;
-        }
-
-        .person-card h3 {
-            margin: 0 0 10px;
-            color: #333;
-            font-size: 1.2em;
-        }
-
-        .person-card p {
-            margin: 5px 0;
-            color: #555;
         }
 
         .course-block {
@@ -103,28 +43,6 @@
             font-size: 0.9em;
         }
 
-        .course-block.alternative {
-            background-color: #ce93d8; /* Light purple */
-            color: #512da8; /* Darker purple */
-        }
-
-        .course-block.course5 {
-            background-color: #ffcdd2; /* Light red */
-            color: #c62828; /* Darker red */
-        }
-
-
-        .common-list {
-            margin: 10px 0 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .common-list li {
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-
         .common-course {
             color: #007BFF;
             display: inline-block;
@@ -133,10 +51,50 @@
             border-radius: 5px;
             margin: 3px 5px;
         }
+
     </style>
 </head>
 <body>
-    <h1>Course Connections</h1>
+    <style>
+        .container { /* Container for relative positioning */
+            position: relative; /* Important for absolute positioning of child elements */
+            display: inline-block; /* So it takes up only necessary width */
+        }
+
+        .mrz-link {
+            position: absolute; /* Position it relative to the container */
+            top: 50%; /* Vertically center */
+            left: calc(100% + 0.2em); /* Position to the right of the heading with a small gap */
+            transform: translateY(-50%); /* Adjust vertical position for perfect centering */
+            padding: 4px 8px;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-family: 'Bebas Neue', sans-serif; /* Or your chosen font */
+            font-weight: bold;
+            white-space: nowrap; /* Prevent MRZ from wrapping */
+        }
+
+        .mrz-link:hover {
+            color: #000;
+            text-decoration: underline;
+        }
+
+        h1 {
+            margin: 0; /* Remove all margins from the heading */
+            display: inline-block;
+        }
+
+        /* Include the font (if you choose a custom one) */
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap'); /* Or your font URL */
+
+        </style>
+
+        <div class="container">
+            <h1>PrePreHomies</h1>
+            <a href="https://github.com/itzMRZ" class="mrz-link">by MRZ</a>
+        </div>
+
     <div class="controls">
         <button id="sort-courses">Sort Courses</button>
     </div>
@@ -144,32 +102,29 @@
     <div id="person-details"></div>
 
     <script>
-         fetch('course_data.json')
+        fetch('course_data.json')
             .then(response => response.json())
             .then(jsonData => {
-                const courseData = jsonData;
+                const normalizeCourse = (course) => course.replace(/\s+/g, '').toUpperCase();
 
-                const courseListDiv = document.getElementById('course-list');
-                const personDetailsDiv = document.getElementById('person-details');
+                const courseData = jsonData.map(person => {
+                    person.Courses = person.Courses.map(normalizeCourse);
+                    if (person["Course 5"]) person["Course 5"] = normalizeCourse(person["Course 5"]);
+                    person["Alternative Courses"] = person["Alternative Courses"].map(normalizeCourse);
+                    return person;
+                });
+
+                function getAllCourses(person) {
+                    return [...new Set([...person.Courses, person["Course 5"], ...person["Alternative Courses"]].filter(Boolean))];
+                }
 
                 function displayCourses(sorted = false) {
+                    const courseListDiv = document.getElementById('course-list');
                     courseListDiv.innerHTML = '';
 
                     const coursePeopleMap = {};
                     courseData.forEach(person => {
-                        person.Courses.forEach(course => {
-                            if (!coursePeopleMap[course]) {
-                                coursePeopleMap[course] = [];
-                            }
-                            coursePeopleMap[course].push(person.Name);
-                        });
-                        if (person["Course 5"]) {
-                            if (!coursePeopleMap[person["Course 5"]]) {
-                                coursePeopleMap[person["Course 5"]] = [];
-                            }
-                            coursePeopleMap[person["Course 5"]].push(person.Name);
-                        }
-                        person["Alternative Courses"].forEach(course => {
+                        getAllCourses(person).forEach(course => {
                             if (!coursePeopleMap[course]) {
                                 coursePeopleMap[course] = [];
                             }
@@ -179,7 +134,7 @@
 
                     let courses = Object.keys(coursePeopleMap);
                     if (sorted) {
-                        courses = courses.sort((a, b) => coursePeopleMap[b].length - coursePeopleMap[a].length);
+                        courses.sort((a, b) => coursePeopleMap[b].length - coursePeopleMap[a].length);
                     }
 
                     courses.forEach(course => {
@@ -197,60 +152,34 @@
                 }
 
                 function displayPersonDetails() {
-                    const personCourseMap = {};
+                    const personDetailsDiv = document.getElementById('person-details');
+                    personDetailsDiv.innerHTML = '<h2>Person Details</h2>';
 
                     courseData.forEach(person => {
-                        personCourseMap[person.Name] = [...person.Courses];
-                        if (person["Course 5"]) {
-                            personCourseMap[person.Name].push(person["Course 5"]);
-                        }
-                        person["Alternative Courses"].forEach(course => {
-                            personCourseMap[person.Name].push(course);
-                        });
-                    });
-
-                                        personDetailsDiv.innerHTML = '<h2>Person Details</h2>';
-                    for (const person in personCourseMap) {
-                        const courses = personCourseMap[person];
-                        const commonCourses = Object.keys(personCourseMap)
-                            .filter(otherPerson => otherPerson !== person)
-                            .map(otherPerson => ({
-                                name: otherPerson,
-                                common: courses.filter(course => personCourseMap[otherPerson]?.includes(course))
-                            }))
-                            .filter(entry => entry.common.length > 0);
+                        const courses = getAllCourses(person);
+                        const commonCourses = courseData.map(p => {
+                            if (p.Name !== person.Name) {
+                                const common = courses.filter(course => getAllCourses(p).includes(course));
+                                return { name: p.Name, common };
+                            }
+                            return null;
+                        }).filter(entry => entry && entry.common.length > 0);
 
                         const detailsDiv = document.createElement('div');
                         detailsDiv.className = 'person-card';
                         detailsDiv.innerHTML = `
-                            <h3>${person}</h3>
+                            <h3>${person.Name}</h3>
                             <p><strong>Courses:</strong></p>
                             <div>
-                                ${courses.map(course => {
-                                    let classNames = 'course-block';
-                                    if (courseData.find(p => p.Name === person && p["Alternative Courses"].includes(course))) {
-                                        classNames += ' alternative';
-                                    } else if (courseData.find(p => p.Name === person && p["Course 5"] === course)) {
-                                        classNames += ' course5';
-                                    }
-                                    return `<span class="${classNames}">${course}</span>`;
-                                }).join('')}
+                                ${courses.map(course => `<span class="course-block">${course}</span>`).join('')}
                             </div>
                             ${commonCourses.length > 0 ? '<p><strong>Common Courses:</strong></p>' : ''}
                             <ul class="common-list">
-                                ${commonCourses
-                                    .map(entry => `
-                                        <li>
-                                            <strong>${entry.name}</strong>
-                                            <div>
-                                                ${entry.common.map(course => `<span class="common-course">${course}</span>`).join('')}
-                                            </div>
-                                        </li>`)
-                                    .join('')}
+                                ${commonCourses.map(entry => `<li><strong>${entry.name}</strong><div>${entry.common.map(course => `<span class="common-course">${course}</span>`).join('')}</div></li>`).join('')}
                             </ul>
                         `;
                         personDetailsDiv.appendChild(detailsDiv);
-                    }
+                    });
                 }
 
                 displayCourses();
@@ -263,3 +192,4 @@
             .catch(error => console.error('Error fetching JSON:', error));
     </script>
 </body>
+</html>
