@@ -126,5 +126,16 @@
     ],
     "Course 5": null,
     "Alternative Courses": []
+  },
+    {
+    "Name": "Nega",
+    "Courses": [
+      "CSE111",
+      "CSE320",
+      "MAT120",
+      "CHE101"
+    ],
+    "Course 5": null,
+    "Alternative Courses": []
   }
 ]
